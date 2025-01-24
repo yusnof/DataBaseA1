@@ -10,6 +10,10 @@
 
 -- Alternative, command to run this file (modify this if needed):
 -- psql -f runsetup.sql
+-- -U user -d database -f script.sql
+-- psql -U postgres -d portal -f runsetup.sql
+--psql -U postgres -d portal -f tables.sql
+
 
 
 -- This script deletes everything in your database

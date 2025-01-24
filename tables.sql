@@ -1,10 +1,11 @@
 -- This file will contain all your tables
 CREATE TABLE Students (
     idnr TEXT PRIMARY KEY
-    CHECK (idnr SIMILAR TO ’[0-9]{10}’),
+    CHECK (idnr SIMILAR TO '[0-9]{10}'),
     name TEXT NOT NULL,
     login TEXT NOT NULL,
-    program TEXT);
+    program TEXT
+    );
 
 CREATE TABLE Branches (
     name Text, 
@@ -15,7 +16,8 @@ CREATE TABLE Branches (
 CREATE TABLE Courses (
     code CHAR(6) PRIMARY KEY,
     name TEXT NOT NULL,
-    credits FLOAT NOT NULL,
+    credits FLOAT NOT NULL
+    CHECK (credits >= 0 AND credits <= 60),
     department TEXT NOT NULL
 );
 
@@ -27,16 +29,24 @@ CREATE TABLE LimitedCourses (
 
 CREATE TABLE StudentBranches (
     student TEXT PRIMARY KEY,
-    branch TEXT,
-    program TEXT, 
-    FOREIGN KEY (student) REFERENCES Students(idnr)
-    FOREIGN KEY (branch) REFERENCES Branches(name)
-    FOREIGN KEY (program) REFERENCES Branches(program)
+    branch TEXT NOT NULL,
+    program TEXT NOT NULL, 
+    FOREIGN KEY (student) REFERENCES Students(idnr),
+    FOREIGN KEY (branch, program) REFERENCES Branches(name, program)
 );
 
 CREATE TABLE Classifications (
     name TEXT PRIMARY KEY
 );
+
+CREATE TABLE Classified (
+    course TEXT,
+    classifications TEXT,
+    PRIMARY KEY (course, classifications),
+    FOREIGN KEY (course) REFERENCES Courses(code),
+    FOREIGN KEY (classifications) REFERENCES Classifications(name)
+);
+
 
 CREATE TABLE MandatoryProgram (
     course TEXT,
@@ -48,33 +58,45 @@ CREATE TABLE MandatoryProgram (
 CREATE TABLE MandatoryBranch (
     course TEXT, 
     branch TEXT,
-    program TEXT
+    program TEXT,
     PRIMARY KEY (course, branch, program), 
-    FOREIGN KEY (course) REFERENCES Courses(code)
+    FOREIGN KEY (course) REFERENCES Courses(code),
     FOREIGN KEY (branch, program) REFERENCES Branches(name, program) 
+);
+
+CREATE TABLE RecommendedBranch(
+    course TEXT,
+    branch TEXT,
+    program TEXT,
+    PRIMARY KEY (course, branch, program), 
+    FOREIGN KEY (course) REFERENCES Courses(code),
+    FOREIGN KEY (branch, program) REFERENCES Branches(name, program)    
 );
 
 CREATE TABLE Registered (
     student TEXT,
-    course TEXT
-    PRIMARY KEY (student, course)
-    FOREIGN KEY (student) REFERENCES Students(idnr)
+    course TEXT,
+    PRIMARY KEY (student, course),
+    FOREIGN KEY (student) REFERENCES Students(idnr),
     FOREIGN KEY (course) REFERENCES Courses(code)
 );
 
 CREATE TABLE Taken (
     student TEXT, 
     course TEXT,
-    PRIMARY KEY (student, course)
-    FOREIGN KEY (student) REFERENCES Students(idnr)
+    grade CHAR(1) DEFAULT 'U',
+    CONSTRAINT okgrade CHECK (grade in ('U', '3', '4', '5')),
+
+    PRIMARY KEY (student, course),
+    FOREIGN KEY (student) REFERENCES Students(idnr),
     FOREIGN KEY (course) REFERENCES Courses(code)
 );
 
 CREATE TABLE WaitingList (
     student TEXT,
     course TEXT,
-    positon INT
-    PRIMARY KEY (student, course)
-    FOREIGN KEY (student) REFERENCES Students(idnr)
+    positon INT,
+    PRIMARY KEY (student, course),
+    FOREIGN KEY (student) REFERENCES Students(idnr),
     FOREIGN KEY (course) REFERENCES LimitedCourses(code)
 );
