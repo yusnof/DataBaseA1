@@ -64,10 +64,10 @@ SELECT student, course, status
 FROM Registrations
 ORDER BY (status, course, student);
 
--- SELECT student, totalCredits, mandatoryLeft, mathCredits, seminarCourses,
---        qualified
--- FROM PathToGraduation
--- ORDER BY student;
+SELECT student, totalCredits, mandatoryLeft, mathCredits, seminarCourses,
+        qualified
+FROM PathToGraduation
+ORDER BY student;
 
 
 -- Helper views for PathToGraduation (optional)
@@ -78,11 +78,11 @@ ORDER BY (student, course);
 
 SELECT student, course
 FROM UnreadMandatory
-ORDER BY (student, course);,
+ORDER BY (student, course);
 
--- SELECT student, course, credits
--- FROM RecommendedCourses
--- ORDER BY (student, course);
+--SELECT student, course, credits
+--FROM RecommendedCourses
+--ORDER BY (student, course);
 
 
 -- Part 3, once it is ready
