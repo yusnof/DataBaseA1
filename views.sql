@@ -79,7 +79,7 @@ CREATE VIEW PathToGraduation AS (
     --The qualified column checks if the student meets the graduation requirements
     (COALESCE(PassedCourses.totalCredits, 0) >= 10 AND 
     COALESCE(mathCredits, 0) >= 20 AND 
-    COALESCE(seminarCourses, 0) >= 0) AND
+    COALESCE(seminarCourses, 0) >= 1) AND
     COALESCE(mandatoryLeft, 0) = 0  
     AS qualified
     FROM Students
