@@ -1,10 +1,15 @@
 -- This file will contain all your views
 
+-- Basic information about students like name and login in addition to Student branches if they exist. 
+
 CREATE VIEW BasicInformation AS (
     SELECT Students.idnr, Students.name AS Name, Students.login, Students.program, StudentBranches.branch AS Branch
     FROM Students 
     LEFT OUTER JOIN
     StudentBranches ON Students.idnr = StudentBranches.student); 
+
+-- all finished courses in a tabel with name of the students and the name of the courses. This is 
+-- done with the combination of tabel Taken and Courses
 
 CREATE VIEW FinishedCourses AS (
     SELECT
@@ -18,10 +23,14 @@ CREATE VIEW FinishedCourses AS (
     WHERE Taken.grade IN ('U', '3', '4', '5')
 );
 
+--PassedCourses is made of the tabel FinishedCourses but we exclude the students with the not passing grade
+
 CREATE VIEW PassedCourses AS (
     SELECT student, course, credits FROM FinishedCourses
     WHERE grade != 'U'
 );
+
+--Registrations is created with the combination of registered and waiting students 
 
 CREATE VIEW Registrations AS (
     SELECT Registered.student, Registered.course, 'Registered' AS status
@@ -30,6 +39,9 @@ CREATE VIEW Registrations AS (
     SELECT WaitingList.student, WaitingList.course, 'Waiting' AS status
     FROM WaitingList
 );
+
+--Mandatory courses that students haven't passed yet. Its created with taking all the table of student and the 
+-- mandatory courses and cheacking it against the PassedCourses tabel 
 
 CREATE VIEW UnreadMandatory AS (
     SELECT 
@@ -53,6 +65,9 @@ CREATE VIEW UnreadMandatory AS (
         WHERE PassedCourses.student = Students.idnr
     )
 );
+
+-- Calculates:Total accumulated credits, remaining mandatory courses, math-specific credits,
+-- completed seminar courses, qualification status based on credit thresholds
 
 CREATE VIEW PathToGraduation AS (
     SELECT Students.idnr AS student,
