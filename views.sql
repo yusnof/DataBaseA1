@@ -78,12 +78,13 @@ CREATE VIEW PathToGraduation AS (
     COALESCE(SeminarCourses.seminarCourses, 0) AS seminarCourses,
     COALESCE(recommendedBranchCredits, 0) AS recommendedBranchCredits,
     --The qualified column checks if the student meets the graduation requirements
-    (COALESCE(PassedCourses.totalCredits, 0) >= 10 AND 
+    (
+    COALESCE(PassedCourses.totalCredits, 0) >= 10 AND 
     COALESCE(mathCredits, 0) >= 20 AND 
-    COALESCE(seminarCourses, 0) >= 1) AND
+    COALESCE(seminarCourses, 0) >= 1 AND
     COALESCE(mandatoryLeft, 0) = 0 AND
-    COALESCE(recommendedBranchCredits, 0) >= 10)
-    AS qualified
+    COALESCE(recommendedBranchCredits, 0) >= 10
+    )AS qualified
     FROM Students
     LEFT JOIN (
         --The subquery calculates the total credits of the student
@@ -91,14 +92,13 @@ CREATE VIEW PathToGraduation AS (
         GROUP BY student) PassedCourses ON Students.idnr = PassedCourses.student
     LEFT JOIN (
         --The subquery calculates the number of mandatory courses left for the student
-        SELECT student, COUNT(course) AS mandatoryLeft FROM UnreadMandatory
+        SELECT UnreadMandatory.student, COUNT(UnreadMandatory.course) AS mandatoryLeft FROM UnreadMandatory
         LEFT JOIN 
         Classified ON UnreadMandatory.course = Classified.course
         WHERE Classified.course IS NULL OR Classified.classification NOT IN ('math', 'seminar') 
         GROUP BY student
         ) UnreadMandatory ON Students.idnr = UnreadMandatory.student
-    --The subquery calculates the number of math credits of the student
-    
+    --The subquery calculates the number of math credits of the student   
     LEFT JOIN (SELECT student, SUM(credits) AS mathCredits FROM PassedCourses
         NATURAL JOIN Classified
         WHERE classification = 'math'
@@ -112,7 +112,9 @@ CREATE VIEW PathToGraduation AS (
         SeminarCourses ON Students.idnr = SeminarCourses.student
     LEFT JOIN (
         --The subquery calculates the number of recommended branch credits of the student
-        SELECT student, SUM(credits) AS recommendedBranchCredits FROM PassedCourses
-        JOIN RecommendedBranch ON PassedCourses.student = RecommendedBranch.student
-        GROUP BY student) RecommendedBranch ON Students.idnr = RecommendedBranch.student
+        SELECT PassedCourses.student, SUM(PassedCourses.credits) AS recommendedBranchCredits 
+        FROM PassedCourses
+        JOIN RecommendedBranch ON PassedCourses.course = RecommendedBranch.course
+        GROUP BY student) 
+        RecommendedBranch ON Students.idnr = RecommendedBranch.student
 );
