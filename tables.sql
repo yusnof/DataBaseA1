@@ -7,7 +7,7 @@ CREATE TABLE Students (
     CHECK (idnr SIMILAR TO '[0-9]{10}'),
     name TEXT NOT NULL,
     login TEXT NOT NULL,
-    program TEXT
+    program TEXT NOT NULL 
     );
 
 --Creates a table for the branches
@@ -32,7 +32,7 @@ CREATE TABLE Courses (
 --Creates a table for the limited courses
 CREATE TABLE LimitedCourses (
     code CHAR(6) PRIMARY KEY,
-    capacity INT,
+    capacity INT NOT NULL,
     FOREIGN KEY (code) REFERENCES Courses(code)
 );
 
@@ -102,7 +102,7 @@ CREATE TABLE Registered (
 CREATE TABLE Taken (
     student TEXT, 
     course TEXT,
-    grade CHAR(1) DEFAULT 'U',
+    grade CHAR(1) DEFAULT 'U' NOT NULL ,
     CONSTRAINT okgrade CHECK (grade in ('U', '3', '4', '5')),
 
     PRIMARY KEY (student, course),
@@ -114,7 +114,7 @@ CREATE TABLE Taken (
 CREATE TABLE WaitingList (
     student TEXT,
     course TEXT,
-    position INT,
+    position INT NOT NULL,
     PRIMARY KEY (student, course),
     FOREIGN KEY (student) REFERENCES Students(idnr),
     FOREIGN KEY (course) REFERENCES LimitedCourses(code)
