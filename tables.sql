@@ -114,7 +114,7 @@ CREATE TABLE Taken (
 CREATE TABLE WaitingList (
     student TEXT,
     course TEXT,
-    positon INT,
+    position INT,
     PRIMARY KEY (student, course),
     FOREIGN KEY (student) REFERENCES Students(idnr),
     FOREIGN KEY (course) REFERENCES LimitedCourses(code)
