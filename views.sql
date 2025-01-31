@@ -1,8 +1,6 @@
 -- This file will contain all your views
 
 -- Basic information about students like name and login in addition to Student branches if they exist. 
-
---Creates a view that shows the basic information of the students
 --The view is created by joining the Students table with the StudentBranches table
 CREATE VIEW BasicInformation AS (
     SELECT Students.idnr, Students.name AS Name, Students.login, Students.program, StudentBranches.branch AS Branch
@@ -12,7 +10,6 @@ CREATE VIEW BasicInformation AS (
 
 -- all finished courses in a tabel with name of the students and the name of the courses. This is 
 -- done with the combination of tabel Taken and Courses
-
 CREATE VIEW FinishedCourses AS (
     SELECT
     Taken.student, 
@@ -30,8 +27,6 @@ CREATE VIEW PassedCourses AS (
     WHERE grade != 'U'
 );
 
---Registrations is created with the combination of registered and waiting students 
-
 --Creates a view that shows the registrations of the students
 --The view is created by joining the Registered table with the WaitingList table
 --The status column is added to differentiate between registered and waiting students
@@ -42,9 +37,6 @@ CREATE VIEW Registrations AS (
     SELECT WaitingList.student, WaitingList.course, 'Waiting' AS status
     FROM WaitingList
 );
-
---Mandatory courses that students haven't passed yet. Its created with taking all the table of student and the 
--- mandatory courses and cheacking it against the PassedCourses tabel 
 
 --Creates a view that shows the mandatory courses that the students have not yet taken
 --The view is created by joining the Students table with the MandatoryProgram and MandatoryBranch tables
@@ -74,8 +66,6 @@ CREATE VIEW UnreadMandatory AS (
     )
 );
 
--- Calculates:Total accumulated credits, remaining mandatory courses, math-specific credits,
--- completed seminar courses, qualification status based on credit thresholds
 
 --Creates a view that shows the recommended courses for the students
 --The view is created by joining the Students table with the RecommendedProgram and RecommendedBranch tables
