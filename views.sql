@@ -31,10 +31,10 @@ CREATE VIEW PassedCourses AS (
 --The view is created by joining the Registered table with the WaitingList table
 --The status column is added to differentiate between registered and waiting students
 CREATE VIEW Registrations AS (
-    SELECT Registered.student, Registered.course, 'Registered' AS status
+    SELECT Registered.student, Registered.course, 'registered' AS status
     FROM Registered
     UNION
-    SELECT WaitingList.student, WaitingList.course, 'Waiting' AS status
+    SELECT WaitingList.student, WaitingList.course, 'waiting' AS status
     FROM WaitingList
 );
 
