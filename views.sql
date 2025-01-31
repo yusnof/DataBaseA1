@@ -80,7 +80,7 @@ CREATE VIEW PathToGraduation AS (
     (COALESCE(PassedCourses.totalCredits, 0) >= 10 AND 
     COALESCE(mathCredits, 0) >= 20 AND 
     COALESCE(seminarCourses, 0) >= 0) AND
-    COALESCE(mandatoryLeft, 0) != 0  
+    COALESCE(mandatoryLeft, 0) = 0  
     AS qualified
     FROM Students
     LEFT JOIN (
