@@ -31,10 +31,10 @@ CREATE VIEW PassedCourses AS (
 --The view is created by joining the Registered table with the WaitingList table
 --The status column is added to differentiate between registered and waiting students
 CREATE VIEW Registrations AS (
-    SELECT Registered.student, Registered.course, 'Registered' AS status
+    SELECT Registered.student, Registered.course, 'registered' AS status
     FROM Registered
     UNION
-    SELECT WaitingList.student, WaitingList.course, 'Waiting' AS status
+    SELECT WaitingList.student, WaitingList.course, 'waiting' AS status
     FROM WaitingList
 );
 
@@ -79,7 +79,9 @@ CREATE VIEW PathToGraduation AS (
     --The qualified column checks if the student meets the graduation requirements
     (COALESCE(PassedCourses.totalCredits, 0) >= 10 AND 
     COALESCE(mathCredits, 0) >= 20 AND 
-    COALESCE(seminarCourses, 0) >= 0)AS qualified
+    COALESCE(seminarCourses, 0) >= 0) AND
+    COALESCE(mandatoryLeft, 0) != 0  
+    AS qualified
     FROM Students
     LEFT JOIN (
         --The subquery calculates the total credits of the student
@@ -93,13 +95,13 @@ CREATE VIEW PathToGraduation AS (
     
     LEFT JOIN (SELECT student, SUM(credits) AS mathCredits FROM PassedCourses
         NATURAL JOIN Classified
-        WHERE classifications = 'math'
+        WHERE classification = 'math'
         GROUP BY student)
         mathCredits ON Students.idnr = MathCredits.student
     --The subquery calculates the number of seminar courses of the student
     LEFT JOIN (SELECT student, COUNT(course) AS seminarCourses FROM PassedCourses
         NATURAL JOIN Classified
-        WHERE classifications = 'seminar'
+        WHERE classification = 'seminar'
         GROUP BY student)
         SeminarCourses ON Students.idnr = SeminarCourses.student
 );
