@@ -53,7 +53,7 @@ CREATE TABLE Classifications (
 --Creates a table for the classified courses
 CREATE TABLE Classified (
     course TEXT,
-    classifications TEXT,
+    classification TEXT,
     PRIMARY KEY (course, classifications),
     FOREIGN KEY (course) REFERENCES Courses(code),
     FOREIGN KEY (classifications) REFERENCES Classifications(name)
