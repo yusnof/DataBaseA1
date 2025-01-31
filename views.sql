@@ -93,13 +93,13 @@ CREATE VIEW PathToGraduation AS (
     
     LEFT JOIN (SELECT student, SUM(credits) AS mathCredits FROM PassedCourses
         NATURAL JOIN Classified
-        WHERE classifications = 'math'
+        WHERE classification = 'math'
         GROUP BY student)
         mathCredits ON Students.idnr = MathCredits.student
     --The subquery calculates the number of seminar courses of the student
     LEFT JOIN (SELECT student, COUNT(course) AS seminarCourses FROM PassedCourses
         NATURAL JOIN Classified
-        WHERE classifications = 'seminar'
+        WHERE classification = 'seminar'
         GROUP BY student)
         SeminarCourses ON Students.idnr = SeminarCourses.student
 );
