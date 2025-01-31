@@ -61,8 +61,8 @@ CREATE VIEW PathToGraduation AS (
     COALESCE(mathCredits, 0) AS mathCredits,
     COALESCE(SeminarCourses.seminarCourses, 0) AS seminarCourses,
     (COALESCE(PassedCourses.totalCredits, 0) > 10 AND 
-    COALESCE(mathCredits, 0) > 19 AND 
-    COALESCE(seminarCourses, 0) > 0)AS qualified
+    COALESCE(mathCredits, 0) >= 19 AND 
+    COALESCE(seminarCourses, 0) >= 0)AS qualified
     FROM Students
     LEFT JOIN (
         SELECT student, SUM(credits) AS totalCredits FROM PassedCourses 
