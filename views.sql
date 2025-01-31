@@ -32,34 +32,26 @@ CREATE VIEW Registrations AS (
 );
 
 CREATE VIEW UnreadMandatory AS (
-    -- List all program-mandatory courses for each student
-    SELECT
-        Students.idnr AS student,
-        MandatoryProgram.course AS course
+    SELECT 
+    Students.idnr AS student,
+    MandatoryProgram.course AS course
     FROM Students
-    JOIN MandatoryProgram ON
-        MandatoryProgram.program = Students.program
-    LEFT JOIN PassedCourses ON
-        Students.idnr = PassedCourses.student AND
-        MandatoryProgram.course = PassedCourses.course
-    WHERE PassedCourses.course IS NULL
-
+    JOIN MandatoryProgram ON Students.program = MandatoryProgram.program
+    WHERE MandatoryProgram.course NOT IN (
+        SELECT course FROM PassedCourses
+        WHERE PassedCourses.student = Students.idnr
+    )
     UNION
-
-    -- List all branch-mandatory courses for each student
     SELECT
-        Students.idnr AS student,
-        MandatoryBranch.course AS course
+    Students.idnr AS student,
+    MandatoryBranch.course AS course
     FROM Students
-    JOIN StudentBranches ON
-        Students.idnr = StudentBranches.student
-    JOIN MandatoryBranch ON
-        StudentBranches.branch = MandatoryBranch.branch AND
-        StudentBranches.program = MandatoryBranch.program
-    LEFT JOIN PassedCourses ON
-        Students.idnr = PassedCourses.student AND
-        MandatoryBranch.course = PassedCourses.course
-    WHERE PassedCourses.course IS NULL
+    JOIN StudentBranches ON Students.idnr = StudentBranches.student
+    JOIN MandatoryBranch ON StudentBranches.branch = MandatoryBranch.branch AND StudentBranches.program = MandatoryBranch.program
+    WHERE MandatoryBranch.course NOT IN (
+        SELECT course FROM PassedCourses
+        WHERE PassedCourses.student = Students.idnr
+    )
 );
 
 CREATE VIEW PathToGraduation AS (
@@ -68,7 +60,9 @@ CREATE VIEW PathToGraduation AS (
     COALESCE(UnreadMandatory.mandatoryLeft, 0) AS mandatoryLeft,
     COALESCE(mathCredits, 0) AS mathCredits,
     COALESCE(SeminarCourses.seminarCourses, 0) AS seminarCourses,
-    (COALESCE(PassedCourses.totalCredits, 0) > 10) AS qualified
+    (COALESCE(PassedCourses.totalCredits, 0) > 10 AND 
+    COALESCE(mathCredits, 0) > 19 AND 
+    COALESCE(seminarCourses, 0) > 0)AS qualified
     FROM Students
     LEFT JOIN (
         SELECT student, SUM(credits) AS totalCredits FROM PassedCourses 
