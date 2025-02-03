@@ -107,8 +107,6 @@ CREATE VIEW PathToGraduation AS
     LEFT JOIN (
         SELECT UnreadMandatory.student, COUNT(UnreadMandatory.course) AS mandatoryLeft 
         FROM UnreadMandatory
-        LEFT JOIN Classified ON UnreadMandatory.course = Classified.course
-        WHERE Classified.course IS NULL OR Classified.classification NOT IN ('math', 'seminar') 
         GROUP BY UnreadMandatory.student
     ) UnreadMandatory ON Students.idnr = UnreadMandatory.student
     -- Calculate math credits
