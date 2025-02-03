@@ -66,55 +66,64 @@ CREATE VIEW UnreadMandatory AS (
     )
 );
 
-
 --Creates a view that shows the recommended courses for the students
 --The view is created by joining the Students table with the RecommendedProgram and RecommendedBranch tables
-CREATE VIEW PathToGraduation AS (
-    SELECT Students.idnr AS student,
-    --Coalesce is used to handle NULL values and replace them with 0
-    COALESCE(totalCredits,0) AS totalCredits,
-    COALESCE(UnreadMandatory.mandatoryLeft, 0) AS mandatoryLeft,
-    COALESCE(mathCredits, 0) AS mathCredits,
-    COALESCE(SeminarCourses.seminarCourses, 0) AS seminarCourses,
-    COALESCE(recommendedBranchCredits, 0) AS recommendedBranchCredits,
-    --The qualified column checks if the student meets the graduation requirements
-    (
-    COALESCE(PassedCourses.totalCredits, 0) >= 10 AND 
-    COALESCE(mathCredits, 0) >= 20 AND 
-    COALESCE(seminarCourses, 0) >= 1 AND
-    COALESCE(mandatoryLeft, 0) = 0 AND
-    COALESCE(recommendedBranchCredits, 0) >= 10
-    )AS qualified
+CREATE VIEW PathToGraduation AS
+    SELECT 
+        Students.idnr AS student,
+        --Coalesce is used to handle NULL values and replace them with 0
+        COALESCE(PassedCourses.totalCredits, 0) AS totalCredits,
+        COALESCE(UnreadMandatory.mandatoryLeft, 0) AS mandatoryLeft,
+        COALESCE(mathCredits.mathCredits, 0) AS mathCredits,
+        COALESCE(SeminarCourses.seminarCourses, 0) AS seminarCourses,
+        -- Qualification criteria
+        (
+            COALESCE(PassedCourses.totalCredits, 0) >= 10 AND 
+            COALESCE(mathCredits.mathCredits, 0) >= 20 AND 
+            COALESCE(SeminarCourses.seminarCourses, 0) >= 1 AND
+            COALESCE(UnreadMandatory.mandatoryLeft, 0) = 0 
+            --AND
+            --COALESCE(recommendedBranchCredits, 0) >= 10
+        ) AS qualified
     FROM Students
+    -- Calculate total credits
     LEFT JOIN (
-        --The subquery calculates the total credits of the student
-        SELECT student, SUM(credits) AS totalCredits FROM PassedCourses 
-        GROUP BY student) PassedCourses ON Students.idnr = PassedCourses.student
-    LEFT JOIN (
-        --The subquery calculates the number of mandatory courses left for the student
-        SELECT UnreadMandatory.student, COUNT(UnreadMandatory.course) AS mandatoryLeft FROM UnreadMandatory
-        LEFT JOIN 
-        Classified ON UnreadMandatory.course = Classified.course
-        WHERE Classified.course IS NULL OR Classified.classification NOT IN ('math', 'seminar') 
+        SELECT student, SUM(credits) AS totalCredits 
+        FROM PassedCourses 
         GROUP BY student
-        ) UnreadMandatory ON Students.idnr = UnreadMandatory.student
-    --The subquery calculates the number of math credits of the student   
-    LEFT JOIN (SELECT student, SUM(credits) AS mathCredits FROM PassedCourses
+    ) PassedCourses ON Students.idnr = PassedCourses.student
+    -- Calculate number of mandatory courses left
+    LEFT JOIN (
+        SELECT UnreadMandatory.student, COUNT(UnreadMandatory.course) AS mandatoryLeft 
+        FROM UnreadMandatory
+        LEFT JOIN Classified ON UnreadMandatory.course = Classified.course
+        WHERE Classified.course IS NULL OR Classified.classification NOT IN ('math', 'seminar') 
+        GROUP BY UnreadMandatory.student
+    ) UnreadMandatory ON Students.idnr = UnreadMandatory.student
+    -- Calculate math credits
+    LEFT JOIN (
+        SELECT student, SUM(credits) AS mathCredits 
+        FROM PassedCourses
         NATURAL JOIN Classified
         WHERE classification = 'math'
-        GROUP BY student)
-        mathCredits ON Students.idnr = MathCredits.student
-    --The subquery calculates the number of seminar courses of the student
-    LEFT JOIN (SELECT student, COUNT(course) AS seminarCourses FROM PassedCourses
+        GROUP BY student
+    ) mathCredits ON Students.idnr = mathCredits.student
+    -- Calculate number of seminar courses
+    LEFT JOIN (
+        SELECT student, COUNT(course) AS seminarCourses 
+        FROM PassedCourses
         NATURAL JOIN Classified
         WHERE classification = 'seminar'
-        GROUP BY student)
-        SeminarCourses ON Students.idnr = SeminarCourses.student
+        GROUP BY student
+    ) SeminarCourses ON Students.idnr = SeminarCourses.student
+    
+    -- Calculate recommended branch credits
     LEFT JOIN (
-        --The subquery calculates the number of recommended branch credits of the student
-        SELECT PassedCourses.student, SUM(PassedCourses.credits) AS recommendedBranchCredits 
-        FROM PassedCourses
-        JOIN RecommendedBranch ON PassedCourses.course = RecommendedBranch.course
-        GROUP BY student) 
-        RecommendedBranch ON Students.idnr = RecommendedBranch.student
-);
+        SELECT StudentBranches.Student, SUM(PassedCourses.credits) AS recommendedBranchCredits
+        FROM StudentBranches
+        JOIN RecommendedBranch ON StudentBranches.program = RecommendedBranch.program
+        AND StudentBranches.branch = RecommendedBranch.branch
+        JOIN PassedCourses
+        ON StudentBranches.student = PassedCourses.student AND RecommendedBranch.course = PassedCourses.course
+        GROUP BY StudentBranches.Student) recommendedBranchCredits ON students.idnr = recommendedBranchCredits.student
+    ;
