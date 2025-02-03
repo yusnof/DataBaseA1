@@ -76,7 +76,6 @@ CREATE VIEW PathToGraduation AS (
     COALESCE(UnreadMandatory.mandatoryLeft, 0) AS mandatoryLeft,
     COALESCE(mathCredits, 0) AS mathCredits,
     COALESCE(SeminarCourses.seminarCourses, 0) AS seminarCourses,
-    COALESCE(recommendedBranchCredits, 0) AS recommendedBranchCredits,
     --The qualified column checks if the student meets the graduation requirements
     (
     COALESCE(PassedCourses.totalCredits, 0) >= 10 AND 
@@ -84,6 +83,7 @@ CREATE VIEW PathToGraduation AS (
     COALESCE(seminarCourses, 0) >= 1 AND
     COALESCE(mandatoryLeft, 0) = 0 AND
     COALESCE(recommendedBranchCredits, 0) >= 10
+    
     )AS qualified
     FROM Students
     LEFT JOIN (
@@ -114,7 +114,8 @@ CREATE VIEW PathToGraduation AS (
         --The subquery calculates the number of recommended branch credits of the student
         SELECT PassedCourses.student, SUM(PassedCourses.credits) AS recommendedBranchCredits 
         FROM PassedCourses
-        JOIN RecommendedBranch ON PassedCourses.course = RecommendedBranch.course
+        JOIN RecommendedBranch ON PassedCourses.course = RecommendedBranch.course 
+        JOIN StudentBranches ON StudentBranches.student = PassedCourses.student AND RecommendedBranch.program = StudentBranches.program
         GROUP BY student) 
         RecommendedBranch ON Students.idnr = RecommendedBranch.student
 );
