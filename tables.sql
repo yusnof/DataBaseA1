@@ -32,7 +32,8 @@ CREATE TABLE Courses (
 --Creates a table for the limited courses
 CREATE TABLE LimitedCourses (
     code CHAR(6) PRIMARY KEY,
-    capacity INT NOT NULL,
+    capacity INT NOT NULL
+    CHECK (capacity >= AND capacity <= 100),
     FOREIGN KEY (code) REFERENCES Courses(code)
 );
 
