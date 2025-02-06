@@ -33,13 +33,14 @@ CREATE TABLE Courses (
 CREATE TABLE LimitedCourses (
     code CHAR(6) PRIMARY KEY,
     capacity INT NOT NULL
-    CHECK (capacity >= AND capacity <= 100),
+    CHECK (capacity >= 0 AND capacity <= 100),
     FOREIGN KEY (code) REFERENCES Courses(code)
 );
 
 --Creates a table for the student branches
 CREATE TABLE StudentBranches (
-    student TEXT PRIMARY KEY,
+    student TEXT PRIMARY KEY
+    CHECK (student SIMILAR TO '[0-9]{10}'),
     branch TEXT NOT NULL,
     program TEXT NOT NULL, 
     FOREIGN KEY (student) REFERENCES Students(idnr),
@@ -53,7 +54,7 @@ CREATE TABLE Classifications (
 
 --Creates a table for the classified courses
 CREATE TABLE Classified (
-    course TEXT,
+    course CHAR(6),
     classification TEXT,
     PRIMARY KEY (course, classification),
     FOREIGN KEY (course) REFERENCES Courses(code),
@@ -62,7 +63,7 @@ CREATE TABLE Classified (
 
 --Creates a table for the passed courses
 CREATE TABLE MandatoryProgram (
-    course TEXT,
+    course CHAR(6),
     program TEXT,
     PRIMARY KEY (course, program),
     FOREIGN KEY (course) REFERENCES Courses
@@ -70,7 +71,7 @@ CREATE TABLE MandatoryProgram (
 
 --Creates a table for the mandatory branches
 CREATE TABLE MandatoryBranch (
-    course TEXT, 
+    course CHAR(6), 
     branch TEXT,
     program TEXT,
     PRIMARY KEY (course, branch, program), 
@@ -80,7 +81,7 @@ CREATE TABLE MandatoryBranch (
 
 --Creates a table for the recommended courses
 CREATE TABLE RecommendedBranch(
-    course TEXT,
+    course CHAR(6),
     branch TEXT,
     program TEXT,
     PRIMARY KEY (course, branch, program), 
@@ -90,8 +91,9 @@ CREATE TABLE RecommendedBranch(
 
 --Creates a table for the recommended branches
 CREATE TABLE Registered (
-    student TEXT,
-    course TEXT,
+    student TEXT 
+    CHECK (student SIMILAR TO '[0-9]{10}'),
+    course CHAR(6),
     PRIMARY KEY (student, course),
     FOREIGN KEY (student) REFERENCES Students(idnr),
     FOREIGN KEY (course) REFERENCES Courses(code)
@@ -101,8 +103,9 @@ CREATE TABLE Registered (
 --The table contains the student, course, and grade of the taken courses
 --The grade is checked to be one of 'U', '3', '4', or '5'
 CREATE TABLE Taken (
-    student TEXT, 
-    course TEXT,
+    student TEXT 
+    CHECK (student SIMILAR TO '[0-9]{10}'), 
+    course CHAR(6),
     grade CHAR(1) DEFAULT 'U' NOT NULL ,
     CONSTRAINT okgrade CHECK (grade in ('U', '3', '4', '5')),
 
@@ -113,10 +116,12 @@ CREATE TABLE Taken (
 
 --Creates a table for the waiting list
 CREATE TABLE WaitingList (
-    student TEXT,
-    course TEXT,
+    student TEXT 
+    CHECK (student SIMILAR TO '[0-9]{10}'),
+    course CHAR(6),
     position INT NOT NULL,
     PRIMARY KEY (student, course),
     FOREIGN KEY (student) REFERENCES Students(idnr),
-    FOREIGN KEY (course) REFERENCES LimitedCourses(code)
+    FOREIGN KEY (course) REFERENCES LimitedCourses(code), 
+    CHECK (position >= 0)
 );
