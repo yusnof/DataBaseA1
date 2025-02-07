@@ -1,0 +1,22 @@
+
+Domain:
+D(studentIdnr, studentName, login, branchName, programName, programAbbreviation, 
+ courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity, 
+ classification, grade, position)
+
+-- a) Functional dependencies --
+
+# REMOVE THIS LINE AND REPLACE IT WITH FDS ON THE FORM: a b -> c
+
+-- b) BCNF schema --
+
+# REMOVE THESE LINES AND REPLACE IT WITH A SCHEMA IN BCNF
+# (use _underscore_ to mark keys, like in the ER-schema)
+
+-- c) 4NF additions --
+
+MVD identified: #PUT YOUR MVD HERE ON THE FORM a b ->> c d
+
+# REMOVE THESE LINES AND REPLACE IT WITH CHANGES MADE TO THE SCHEMA
+# FROM b) AFTER 4NF NORMALIZATION (what relations are removed/added)
+
