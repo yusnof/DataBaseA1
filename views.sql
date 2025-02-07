@@ -18,7 +18,7 @@ CREATE VIEW FinishedCourses AS (
     Taken.grade,
     Courses.credits
     FROM Taken
-    JOIN Courses ON Taken.course = Courses.code
+    JOIN Courses ON Taken.course = Courses.code 
     WHERE Taken.grade IN ('U', '3', '4', '5')
 );
 
