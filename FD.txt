@@ -35,6 +35,14 @@ VIOLATION
 {programName, programAbbreviation}+ = {programName, programAbbreviation}
 VIOLATION
 
+
+{courseCode}+ -> {courseCode, courseName, credits, capacity, departmentName, departmentAbbreviation}
+{departmentName}+ -> {departmentAbbreviation}
+
+{studentIdnr courseCode}+ -> 
+{courseCode, grade, position, studentIdnr, 
+studentName, login, programName, programAbbreviation, branchName, departmentName}
+
 -- c) 4NF additions --
 
 MVD identified: #PUT YOUR MVD HERE ON THE FORM a b ->> c d
