@@ -6,12 +6,34 @@ D(studentIdnr, studentName, login, branchName, programName, programAbbreviation,
 
 -- a) Functional dependencies --
 
-# REMOVE THIS LINE AND REPLACE IT WITH FDS ON THE FORM: a b -> c
+studentIdnr -> studentName login programName programAbbreviation branchName
+programName -> programAbbreviation 
+courseCode -> courseName credits capacity
+departmentName -> departmentAbbreviation
+studentIdnr courseCode -> grade position
+courseCode position -> studentIdnr
+courseCode -> departmentName departmentAbbreviation 
 
 -- b) BCNF schema --
 
-# REMOVE THESE LINES AND REPLACE IT WITH A SCHEMA IN BCNF
-# (use _underscore_ to mark keys, like in the ER-schema)
+
+{studentIdnr}+ = {studentIdnr, studentName, login, programName, programAbbreviation, branchName}
+{studentIdnr, studentName, login, programName, programAbbreviation, branchName}+ = {studentIdnr, studentName, login, programName, programAbbreviation, branchName}
+VIOLATION
+
+R11(studentName, login, programName, programAbbreviation, branchName)
+{studentName, login, programName, programAbbreviation, branchName}+ = {studentName, login, programName, programAbbreviation, branchName}
+VIOLATION
+R12(login, programName, programAbbreviation, branchName)
+{login, programName, programAbbreviation, branchName}+ = {login, programName, programAbbreviation, branchName}
+VIOLATION 
+
+
+
+
+{programName}+ = {programName, programAbbreviation}
+{programName, programAbbreviation}+ = {programName, programAbbreviation}
+VIOLATION
 
 -- c) 4NF additions --
 
@@ -20,3 +42,6 @@ MVD identified: #PUT YOUR MVD HERE ON THE FORM a b ->> c d
 # REMOVE THESE LINES AND REPLACE IT WITH CHANGES MADE TO THE SCHEMA
 # FROM b) AFTER 4NF NORMALIZATION (what relations are removed/added)
 
+
+
+courseCode -> classification
