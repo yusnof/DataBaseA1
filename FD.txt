@@ -21,6 +21,7 @@ courseCode -> departmentName departmentAbbreviation
 {studentIdnr, studentName, login, programName, programAbbreviation, branchName}+ = {studentIdnr, studentName, login, programName, programAbbreviation, branchName}
 VIOLATION
 
+
 R11(studentName, login, programName, programAbbreviation, branchName)
 {studentName, login, programName, programAbbreviation, branchName}+ = {studentName, login, programName, programAbbreviation, branchName}
 VIOLATION
