@@ -1,4 +1,3 @@
-
 Domain:
 D(studentIdnr, studentName, login, branchName, programName, programAbbreviation, 
  courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity, 
@@ -6,29 +5,58 @@ D(studentIdnr, studentName, login, branchName, programName, programAbbreviation,
 
 -- a) Functional dependencies --
 
-studentIdnr -> studentName login programName programAbbreviation branchName
+studentIdnr -> studentName login programName branchName
+login -> studentIdnr
 programName -> programAbbreviation 
 courseCode -> courseName credits capacity
 departmentName -> departmentAbbreviation
+departmentAbbreviation -> departmentName
 studentIdnr courseCode -> grade position
 courseCode position -> studentIdnr
-courseCode -> departmentName departmentAbbreviation 
+courseCode -> departmentName  
 
 -- b) BCNF schema --
 
-Decompose R using studentIdnr -> studentName login programName programAbbreviation branchName. 
-X={studentIdnr}, X+={studentIdnr}+ = {studentIdnr, studentName, login, programName, programAbbreviation, branchName}(VIOLATION)
-R1(X+) = R1(studentIdnr, studentName, login, programName, programAbbreviation, branchName) (BCNF)
+X = {studentIdnr}, X+ = {studentIdnr studentName login programName branchName programAbbreviation} (FD VIOLATION (programName -> programAbbreviation))
+D1 = (studentIdnr studentName login programName branchName, programAbbreviation) (VIOLATION)
+--------------------------------
+ D11= {programName, programAbbreviation} BCNF
+ D12= {programName, studentIdnr studentName login branchName} BCNF
+ -------------------------------
+D2 = {studentIdnr, courseCode, courseName, credits, departmentName, capacity, 
+ classification, grade, position} (VIOLATION courseCode not a superkey)
+--------------------------------
+ X = {courseCode}, X+ = {courseCode, courseName, credits, capacity, departmentName, departmentAbbreviation} (FD VIOLATION (departmentName -> departmentAbbreviation))
+ D21(departmentName, departmentAbbreviation) BCNF
+ D22(studentIdnr, courseCode, courseName, credits, capacity, classification, grade, position)
 
-R2(studentIdnr, courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity, 
- classification, grade, position) (BCNF) 
 
-Decompose R2 using programName -> programAbbreviation 
-X={programName}, X+={programName} = {programName, programAbbreviation}(VIOLATION)
-R3(x+) BCNF
 
-R31(programName, studentIdnr, courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity, 
- classification, grade, position) =
+
+
+
+
+
+
+
+
+
+
+
+
+Decompose D with studentIdnr -> studentName login programName branchName
+X = {studentIdnr}, X+ = {studentIdnr studentName login programName branchName, programAbbreviation} VIOLATION
+R1(X+) = R1(studentIdnr studentName login programName branchName, programAbbreviation) VIOLATION (programName -> programAbbreviation)
+--------------------
+Decompose R1 with studentIdnr -> studentName login programName branchName
+X={studentIdnr}, X+={studentIdnr studentName login programName branchName, programAbbreviation} 
+R1(studentIdnr studentName login programName branchName, programAbbreviation) (VIOLATION)
+R2()
+
+R2(X U (D-X+)) = {studentIdnr, courseCode, courseName, credits, capacity, classification, grade, position, departmentAbbreviation, departmentName}
+
+------------------------------------------------------------------------------------
+Decompose R2 studentIdnr -> studentName login programName branchName
 
 
 -- c) 4NF additions --
