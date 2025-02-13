@@ -16,33 +16,20 @@ courseCode -> departmentName departmentAbbreviation
 
 -- b) BCNF schema --
 
+Decompose R using studentIdnr -> studentName login programName programAbbreviation branchName. 
+X={studentIdnr}, X+={studentIdnr}+ = {studentIdnr, studentName, login, programName, programAbbreviation, branchName}(VIOLATION)
+R1(X+) = R1(studentIdnr, studentName, login, programName, programAbbreviation, branchName) (BCNF)
 
-{studentIdnr}+ = {studentIdnr, studentName, login, programName, programAbbreviation, branchName}
-{studentIdnr, studentName, login, programName, programAbbreviation, branchName}+ = {studentIdnr, studentName, login, programName, programAbbreviation, branchName}
-VIOLATION
+R2(studentIdnr, courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity, 
+ classification, grade, position) (BCNF) 
 
+Decompose R2 using programName -> programAbbreviation 
+X={programName}, X+={programName} = {programName, programAbbreviation}(VIOLATION)
+R3(x+) BCNF
 
-R11(studentName, login, programName, programAbbreviation, branchName)
-{studentName, login, programName, programAbbreviation, branchName}+ = {studentName, login, programName, programAbbreviation, branchName}
-VIOLATION
-R12(login, programName, programAbbreviation, branchName)
-{login, programName, programAbbreviation, branchName}+ = {login, programName, programAbbreviation, branchName}
-VIOLATION 
+R31(programName, studentIdnr, courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity, 
+ classification, grade, position) =
 
-
-
-
-{programName}+ = {programName, programAbbreviation}
-{programName, programAbbreviation}+ = {programName, programAbbreviation}
-VIOLATION
-
-
-{courseCode}+ -> {courseCode, courseName, credits, capacity, departmentName, departmentAbbreviation}
-{departmentName}+ -> {departmentAbbreviation}
-
-{studentIdnr courseCode}+ -> 
-{courseCode, grade, position, studentIdnr, 
-studentName, login, programName, programAbbreviation, branchName, departmentName}
 
 -- c) 4NF additions --
 
