@@ -8,26 +8,31 @@ D(studentIdnr, studentName, login, branchName, programName, programAbbreviation,
 studentIdnr -> studentName login programName branchName
 login -> studentIdnr
 programName -> programAbbreviation 
-courseCode -> courseName credits capacity
+courseCode -> courseName credits capacity departmentName
 departmentName -> departmentAbbreviation
 departmentAbbreviation -> departmentName
 studentIdnr courseCode -> grade position
-courseCode position -> studentIdnr
-courseCode -> departmentName  
+courseCode position -> studentIdnr 
 
 -- b) BCNF schema --
-
-X = {studentIdnr}, X+ = {studentIdnr studentName login programName branchName programAbbreviation} (FD VIOLATION (programName -> programAbbreviation))
+--------------------------------
+Decompose D with (studentIdnr -> studentName login programName branchName)
+--------------------------------
+X = {studentIdnr}, X+ = {studentIdnr studentName login programName branchName programAbbreviation} ( VIOLATION (programName -> programAbbreviation) && programName is not a superkey)
 D1 = (studentIdnr studentName login programName branchName, programAbbreviation) (VIOLATION)
 --------------------------------
- D11= {programName, programAbbreviation} BCNF
- D12= {programName, studentIdnr studentName login branchName} BCNF
+Decompose D1 into D11 and D12 
+--------------------------------
+  D11= {programName, programAbbreviation} (BCNF)
+  D12= {programName, studentIdnr studentName login branchName} (BCNF)
  -------------------------------
 D2 = {studentIdnr, courseCode, courseName, credits, departmentName, capacity, 
  classification, grade, position} (VIOLATION courseCode not a superkey)
 --------------------------------
+Decompose D2 into D21 and D22 
+--------------------------------
  X = {courseCode}, X+ = {courseCode, courseName, credits, capacity, departmentName, departmentAbbreviation} (FD VIOLATION (departmentName -> departmentAbbreviation))
- D21(departmentName, departmentAbbreviation) BCNF
+ D21(departmentName, departmentAbbreviation) (BCNF automaticly as we only have two element)
  D22(studentIdnr, courseCode, courseName, credits, capacity, classification, grade, position)
 
 
