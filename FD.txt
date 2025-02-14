@@ -15,62 +15,17 @@ studentIdnr courseCode -> grade position
 courseCode position -> studentIdnr 
 
 -- b) BCNF schema --
---------------------------------
-Decompose D with (studentIdnr -> studentName login programName branchName)
---------------------------------
-X = {studentIdnr}, X+ = {studentIdnr studentName login programName branchName programAbbreviation} ( VIOLATION (programName -> programAbbreviation) && programName is not a superkey)
-D1 = (studentIdnr studentName login programName branchName, programAbbreviation) (VIOLATION)
---------------------------------
-Decompose D1 into D11 and D12 
---------------------------------
-  D11= {programName, programAbbreviation} (BCNF)
-  D12= {programName, studentIdnr studentName login branchName} (BCNF)
- -------------------------------
-D2 = {studentIdnr, courseCode, courseName, credits, departmentName, capacity, 
- classification, grade, position} (VIOLATION courseCode not a superkey)
---------------------------------
-Decompose D2 into D21 and D22 
---------------------------------
- X = {courseCode}, X+ = {courseCode, courseName, credits, capacity, departmentName, departmentAbbreviation} (FD VIOLATION (departmentName -> departmentAbbreviation))
- D21(departmentName, departmentAbbreviation) (BCNF automaticly as we only have two element)
- D22(studentIdnr, courseCode, courseName, credits, capacity, classification, grade, position)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Decompose D with studentIdnr -> studentName login programName branchName
-X = {studentIdnr}, X+ = {studentIdnr studentName login programName branchName, programAbbreviation} VIOLATION
-R1(X+) = R1(studentIdnr studentName login programName branchName, programAbbreviation) VIOLATION (programName -> programAbbreviation)
---------------------
-Decompose R1 with studentIdnr -> studentName login programName branchName
-X={studentIdnr}, X+={studentIdnr studentName login programName branchName, programAbbreviation} 
-R1(studentIdnr studentName login programName branchName, programAbbreviation) (VIOLATION)
-R2()
-
-R2(X U (D-X+)) = {studentIdnr, courseCode, courseName, credits, capacity, classification, grade, position, departmentAbbreviation, departmentName}
-
-------------------------------------------------------------------------------------
-Decompose R2 studentIdnr -> studentName login programName branchName
-
+Superkey
+SK: programName: programAbbreviation
+SK: studentIdnr: studentName login programName branchName
+SK: departmentAbbreviation: departmentName
+SK: courseCode: departmentAbbreviation courseName credits capacity
+SK: studentIdnr courseCode: classification 
+SK  studentIdnr courseCode: position grade
 
 -- c) 4NF additions --
+studentIdnr courseCode -> classification this (VIOLATION of 4NF) bc of courseCode ->>classification
 
-MVD identified: #PUT YOUR MVD HERE ON THE FORM a b ->> c d
-
-# REMOVE THESE LINES AND REPLACE IT WITH CHANGES MADE TO THE SCHEMA
-# FROM b) AFTER 4NF NORMALIZATION (what relations are removed/added)
-
-
-
-courseCode -> classification
+R1(courseCode, classification) in 4NF 
+R2(studentIdnr courseCode) in 4NF 
