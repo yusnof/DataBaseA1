@@ -1,3 +1,61 @@
--- This file will have your final schema. It should be based on ER-schema
--- but extended with unique constraints and an additional fix. 
+Courses(_code_, name, credits)
 
+classification(_name_)
+ 
+Classified(_name_,_code_)
+ name -> classification.name
+ code -> Courses.code 
+
+LimitedCourses(_code_, capacity)
+  code → Courses.code
+
+waitingList(_student_, position, LimitedCourses)
+ student -> studentIdnr.idnr 
+ LimitedCourses -> LimitedCourses.capacity 
+
+Taken(_course_, _student_, grade)
+ course -> Courses.code 
+ student -> student.idrn 
+
+Students(_idnr_, name, login, EnrolledIn)
+  Registered -> Courses.code 
+  EnrolledIn -> Programs.name 
+
+--old
+Students(_idnr_, name, login, program)
+ program -> Programs.name
+
+Branch(_name_, _program_)
+  program -> Programs.name 
+
+Registered(_student_, _course_)
+ student -> Students.idnr 
+ course  -> Courses.code 
+
+Programs(_name_, abbr)
+
+Departments(_name_, abbr)
+
+GivenBy(_program_,_depertment_)
+ program    -> program.name program.abbr
+ depertment -> depertment.name 
+
+MandatoryProgram(_course_, _program_)
+ course  -> Courses.code 
+ program -> program.name program.abbr
+
+Prerequisites(_course_, prename)
+ course  -> Courses.code 
+ prename -> Course.code
+
+MandatoryBranch(_course_, _branch_, _program_)
+ course -> Courses.code 
+ (branch, program) -> Branch.(name, program) 
+
+RecomendedBranch(_course_, _branch_)
+ course -> Courses.code 
+ branch -> Branch.name 
+
+StudentBranch(_name_, branch, program)
+(branch, program) -> Branch.(name, program)
+(name, program)   -> Students.(idnr, progra)
