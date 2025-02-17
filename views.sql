@@ -34,7 +34,7 @@ CREATE VIEW Registrations AS (
     SELECT Registered.student, Registered.course, 'registered' AS status
     FROM Registered
     UNION
-    SELECT WaitingList.student, WaitingList.course, 'waiting' AS status
+    SELECT WaitingList.student, WaitingList.courseCode, 'waiting' AS status
     FROM WaitingList
 );
 

@@ -140,13 +140,11 @@ CREATE TABLE
 CREATE TABLE
     WaitingList (
         student TEXT CHECK (student SIMILAR TO '[0-9]{10}'),
-        course CHAR(6),
+        courseCode CHAR(6),
         position INT NOT NULL,
-        limitedCourses TEXT,
-        PRIMARY KEY (student, course),
+        PRIMARY KEY (student),
         FOREIGN KEY (student) REFERENCES Students (idnr),
-        FOREIGN KEY (course) REFERENCES LimitedCourses (code),
-        FOREIGN KEY (limitedCourses) REFERENCES LimitedCourses(code),
+        FOREIGN KEY (courseCode) REFERENCES LimitedCourses (code),
         CHECK (position >= 0)
     );
 
