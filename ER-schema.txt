@@ -6,7 +6,8 @@
 -- IMPORTANT: This file should be a translation of your diagram
 -- without any additions (no additional constraints etc)!
 
-Courses(_code_, name, credits)
+Courses(_code_, name, credits, department)
+ department -> Departments.name
 
 classification(_name_)
  
@@ -17,7 +18,7 @@ Classified(_name_,_code_)
 LimitedCourses(_code_, capacity)
   code → Courses.code
 
-waitingList(_student_, position, LimitedCourses)
+WaitingList(_student_, position, LimitedCourses)
  student -> studentIdnr.idnr 
  LimitedCourses -> LimitedCourses.capacity 
 
@@ -30,14 +31,14 @@ Students(_idnr_, name, login, EnrolledIn)
   EnrolledIn -> Programs.name 
   
 StudentBranch(_name_, branch, program)
-name -> Students.idnr 
-(branch, program) -> Branch.(name, program)
+ name -> Students.idnr 
+ (branch, program) -> Branch.(name, program)
  
 Branch(_name_, _program_)
   program -> Programs.name
 
 Registered(student, course)
- student->Students.idnr 
+ student-> Students.idnr 
  course -> Courses.code 
 
 Programs(_name_, abbr)
@@ -50,16 +51,16 @@ GivenBy(_program_,_depertment_)
 
 MandatoryProgram(course, program)
  course -> Courses.code 
- program -> program.name program.abbr
+ program -> program.name
 
 MandatoryBranch(_course_, _branch_, _program_)
  course -> Courses.code 
  (branch, program) -> Branch.(name, program) 
 
-Prerequisites(_course_, prename)
+PreRequisites(_course_, _prename_)
  course  -> Courses.code 
  prename -> Course.code 
 
-RecomendedBranch(_course_, _branch_)
+RecomendedBranch(_course_, _branch_, _program_)
  course -> Courses.code 
- branch -> Branch.name
+ (branch, program) -> Branch.(name, program)

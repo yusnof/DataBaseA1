@@ -25,6 +25,12 @@ CREATE TABLE
         PRIMARY KEY (name, program)
     );
 
+CREATE TABLE
+    Departments (
+        name TEXT PRIMARY KEY, 
+        abbr TEXT NOT NULL
+        );
+
 --Creates a table for the courses
 --The table contains the code, name, credits, and department of the courses
 --The code is the primary key of the table
@@ -33,11 +39,10 @@ CREATE TABLE
     Courses (
         code CHAR(6) PRIMARY KEY,
         name TEXT NOT NULL,
-        credits FLOAT NOT NULL CHECK (credits >= 0)
+        credits FLOAT NOT NULL CHECK (credits >= 0),
+        department TEXT NOT NULL,
+        FOREIGN KEY (department) REFERENCES Departments(name)
     );
-
-CREATE TABLE
-    Departments (name TEXT PRIMARY KEY, abbr TEXT NOT NULL);
 
 --Creates a table for the limited courses
 CREATE TABLE
@@ -80,10 +85,9 @@ CREATE TABLE
     MandatoryProgram (
         course CHAR(6),
         program TEXT,
-        abbr TEXT,
         PRIMARY KEY (course, program),
         FOREIGN KEY (course) REFERENCES Courses(code),
-        FOREIGN KEY (program, abbr) REFERENCES Programs(name, abbr)
+        FOREIGN KEY (program) REFERENCES Programs(name)
     );
 
 --Creates a table for the mandatory branches
@@ -153,4 +157,12 @@ CREATE TABLE GivenBy (
         PRIMARY KEY (program, department),
         FOREIGN KEY (program, abbr) REFERENCES Programs(name, abbr),
         FOREIGN KEY (department) REFERENCES Departments(name)
+);
+
+CREATE TABLE PreRequisites (
+    course TEXT,
+    preName TEXT,
+    PRIMARY KEY (course, preName),
+    FOREIGN KEY (course) REFERENCES Courses(code),
+    FOREIGN KEY (preName) REFERENCES Courses(code)
 );
