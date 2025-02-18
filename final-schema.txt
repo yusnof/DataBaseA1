@@ -21,6 +21,8 @@ Taken(_course_, _student_, grade)
 
 Students(_idnr_, name, login, EnrolledIn)
   EnrolledIn -> Programs.name 
+  UNIQUE(login)
+  UNIQUE(idnr, program)
 
 Branch(_name_, _program_)
   program -> Programs.name 
@@ -32,6 +34,7 @@ Registered(_student_, _course_)
 Programs(_name_, abbr)
 
 Departments(_name_, abbr)
+UNIQUE(name,abbr)
 
 GivenBy(_program_,_depertment_)
  program    -> program.name program.abbr
