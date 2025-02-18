@@ -12,6 +12,7 @@ LimitedCourses(_code_, capacity)
 
 WaitingList(_student_, courseCode, position)
  student -> studentIdnr.idnr
+ courseCode -> LimitedCourses.courseCode
  UNIQUE(position, courseCode) 
 
 Taken(_course_, _student_, grade)
@@ -19,7 +20,6 @@ Taken(_course_, _student_, grade)
  student -> student.idnr 
 
 Students(_idnr_, name, login, EnrolledIn)
-  Registered -> Courses.code 
   EnrolledIn -> Programs.name 
 
 Branch(_name_, _program_)

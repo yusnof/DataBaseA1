@@ -18,8 +18,9 @@ Classified(_name_,_code_)
 LimitedCourses(_code_, capacity)
   code → Courses.code
 
-WaitingList(_student_, courseCode, position)
+WaitingList(_student_, _courseCode_, position)
  student -> studentIdnr.idnr
+ courseCode -> LimitedCourses.courseCode
  UNIQUE(position, courseCode) 
 
 Taken(_course_, _student_, grade)
@@ -27,13 +28,12 @@ Taken(_course_, _student_, grade)
  student -> student.idrn 
 
 Students(_idnr_, name, login, EnrolledIn)
-  Registered -> Courses.code 
   EnrolledIn -> Programs.name   
  
 Branch(_name_, _program_)
   program -> Programs.name
 
-Registered(student, course)
+Registered(_student_, _course_)
  student-> Students.idnr 
  course -> Courses.code 
 
@@ -45,7 +45,7 @@ GivenBy(_program_,_depertment_)
  program -> program.name program.abbr
  depertment -> depertment.name 
 
-MandatoryProgram(course, program)
+MandatoryProgram(_course_, _program_)
  course -> Courses.code 
  program -> program.name
 
