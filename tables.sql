@@ -28,7 +28,8 @@ CREATE TABLE
 CREATE TABLE
     Departments (
         name TEXT PRIMARY KEY, 
-        abbr TEXT NOT NULL
+        abbr TEXT NOT NULL,
+        UNIQUE(name,abbr)
         );
 
 --Creates a table for the courses
@@ -145,7 +146,8 @@ CREATE TABLE
         PRIMARY KEY (student),
         FOREIGN KEY (student) REFERENCES Students (idnr),
         FOREIGN KEY (courseCode) REFERENCES LimitedCourses (code),
-        CHECK (position >= 0)
+        CHECK (position >= 0),
+        UNIQUE(position, courseCode) 
     );
 
 CREATE TABLE GivenBy (
