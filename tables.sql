@@ -63,8 +63,8 @@ CREATE TABLE
         student TEXT PRIMARY KEY CHECK (student SIMILAR TO '[0-9]{10}'),
         branch TEXT NOT NULL,
         program TEXT NOT NULL,
-        FOREIGN KEY (student) REFERENCES Students (idnr),
-        FOREIGN KEY (branch, program) REFERENCES Branches (name, program)
+        FOREIGN KEY (branch, program) REFERENCES Branches (name, program),
+        FOREIGN KEY (student, program) REFERENCES Students(idnr, program)
     );
 
 --Creates a table for the classifications
