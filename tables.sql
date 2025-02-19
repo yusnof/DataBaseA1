@@ -29,7 +29,7 @@ CREATE TABLE
     Departments (
         name TEXT PRIMARY KEY, 
         abbr TEXT NOT NULL,
-        UNIQUE(name,abbr)
+        UNIQUE(abbr)
         );
 
 --Creates a table for the courses
