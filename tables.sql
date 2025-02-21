@@ -161,8 +161,8 @@ CREATE TABLE GivenBy (
 
 CREATE TABLE PreRequisites (
     course TEXT,
-    preName TEXT,
-    PRIMARY KEY (course, preName),
+    PreRequisite TEXT,
+    PRIMARY KEY (course, PreRequisite),
     FOREIGN KEY (course) REFERENCES Courses(code),
-    FOREIGN KEY (preName) REFERENCES Courses(code)
+    FOREIGN KEY (PreRequisite) REFERENCES Courses(code)
 );
