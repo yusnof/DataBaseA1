@@ -40,30 +40,37 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION unRegister() RETURNS trigger AS $$
 DECLARE
-waiting INT;
-min_position INT; 
+removed_position INT;
+next_student TEXT;
+next_course TEXT;
+lc_cap INT;
+totalReg INT;
 
-BEGIN 
-  IF EXISTS (SELECT student FROM Registrations WHERE Registrations.status = 'registered' AND NEW.student = student and new.course = course) 
-  THEN    
-    DELETE FROM Registrations WHERE NEW.student = student;
-  ELSEIF EXISTS (SELECT student FROM Registrations WHERE Registrations.status = 'waiting' AND NEW.student = student and new.course = course)
-  THEN
-   
-   DELETE FROM WaitingList WHERE NEW.student = student;
-   -- look at the positions
-    IF EXISTS (SELECT * From waitingList) THEN 
-  
-    SELECT MIN(position) INTO min_position FROM waitingList;
-    INSERT INTO Registered (SELECT * FROM WaitingList WHERE position = min_position);
-    UPDATE waitingList SET positions = positions - 1 WHERE min_position < position ;
+BEGIN
+IF EXISTS (SELECT student FROM Registrations WHERE OLD.student = student AND OLD.course = course)
+THEN 
+    DELETE FROM Registered WHERE OLD.student = student AND OLD.course = course;
     
-    END IF;  
-  END IF;
-  RETURN NEW; --MAYBE?!?!?!?!
+    SELECT student, course INTO next_student, next_course FROM WaitingList WHERE OLD.course = course ORDER BY position ASC LIMIT 1;
+    SELECT capacity INTO lc_cap FROM LimitedCourses WHERE OLD.course = code;
+    SELECT COUNT(course) INTO totalReg FROM Registered WHERE OLD.course = course;
+
+    IF (next_student IS NOT NULL AND lc_cap > totalReg) 
+    THEN
+        INSERT INTO Registered VALUES (next_student, next_course);
+        DELETE FROM WaitingList WHERE student = next_student AND course = next_course;
+        UPDATE WaitingList SET position = position - 1 WHERE OLD.course = course;
+    END IF;
+END IF;
+IF EXISTS (SELECT 1 FROM WaitingList WHERE OLD.student = student AND OLD.course = course)
+THEN
+    SELECT position INTO removed_position FROM WaitingList WHERE OLD.student = student AND OLD.course = course;
+    DELETE FROM WaitingList WHERE OLD.student = student AND OLD.course = course;
+    UPDATE WaitingList SET position = position - 1 WHERE OLD.course = course AND position > removed_position;
+END IF;
+RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
-
 
 CREATE OR REPLACE TRIGGER RegisteredTrigger 
 INSTEAD OF INSERT ON Registrations
