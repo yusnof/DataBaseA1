@@ -1,0 +1,31 @@
+Domain:
+D(studentIdnr, studentName, login, branchName, programName, programAbbreviation, 
+ courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity, 
+ classification, grade, position)
+
+-- a) Functional dependencies --
+
+studentIdnr -> studentName login programName branchName
+login -> studentIdnr
+programName -> programAbbreviation 
+courseCode -> courseName credits capacity departmentName
+departmentName -> departmentAbbreviation
+departmentAbbreviation -> departmentName
+studentIdnr courseCode -> grade position
+courseCode position -> studentIdnr 
+
+-- b) BCNF schema --
+
+Superkey
+SK: programName: programAbbreviation
+SK: studentIdnr: studentName login programName branchName
+SK: departmentAbbreviation: departmentName
+SK: courseCode: departmentAbbreviation courseName credits capacity
+SK: studentIdnr courseCode: classification 
+SK  studentIdnr courseCode: position grade
+
+-- c) 4NF additions --
+studentIdnr courseCode -> classification this (VIOLATION of 4NF) bc of courseCode ->>classification
+
+R1(courseCode, classification) in 4NF 
+R2(studentIdnr courseCode) in 4NF 
