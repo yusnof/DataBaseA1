@@ -31,19 +31,34 @@ public class PortalConnection {
 
     // Register a student on a course, returns a tiny JSON document (as a String)
     public String register(String student, String courseCode){
-      
-      // placeholder, remove along with this comment. 
-      return "{\"success\":false, \"error\":\"Registration is not implemented yet :(\"}";
-      
-      // Here's a bit of useful code, use it or delete it 
-      // } catch (SQLException e) {
-      //    return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
-      // }     
+      String query = "INSERT INTO Registered Values (? , ?);";
+       try(PreparedStatement s = conn.prepareStatement(query);)
+      {
+        s.setString(1, student);
+        s.setString(2, courseCode); 
+        s.executeUpdate(query); 
+        return "{\"success\":true"+"\"}";
+      } // here the output will be an error if we didnt register correctly. 
+       catch (SQLException e) {
+          return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
+      }     
     }
 
     // Unregister a student from a course, returns a tiny JSON document (as a String)
     public String unregister(String student, String courseCode){
-      return "{\"success\":false, \"error\":\"Unregistration is not implemented yet :(\"}";
+      String query = "DELETE FROM Registered WHERE OLD.student = ? AND OLD.course = ?);";
+       try(PreparedStatement s = conn.prepareStatement(query);)
+      {
+        s.setString(1, student);
+        s.setString(2, courseCode); 
+        s.executeUpdate(query); 
+        // here maybe we should test if its really correct but the trigger should catch this issue. 
+        return "{\"success\":true"+"\"}";
+      } 
+       catch (SQLException e) {
+        return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
+      }     
+      
     }
 
     // Return a JSON document containing lots of information about a student, it should validate against the schema found in information_schema.json
@@ -57,9 +72,11 @@ public class PortalConnection {
             st.setString(1, student);
             
             ResultSet rs = st.executeQuery();
+            System.out.println(rs.getString("jsondata"));
             
             if(rs.next())
               return rs.getString("jsondata");
+              
             else
               return "{\"student\":\"does not exist :(\"}"; 
             
