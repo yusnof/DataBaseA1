@@ -31,7 +31,7 @@ public class PortalConnection {
 
     // Register a student on a course, returns a tiny JSON document (as a String)
     public String register(String student, String courseCode){
-      String query = "INSERT INTO Registered Values (? , ?);";
+      String query = "INSERT INTO Registrations Values (? , ?);";
        try(PreparedStatement s = conn.prepareStatement(query);)
       {
         s.setString(1, student);
@@ -47,7 +47,7 @@ public class PortalConnection {
 
     // Unregister a student from a course, returns a tiny JSON document (as a String)
     public String unregister(String student, String courseCode){
-      String query = "DELETE FROM Registered WHERE (student = ? AND course = ?);";
+      String query = "DELETE FROM Registrations WHERE (student = ? AND course = ?);";
        try(PreparedStatement s = conn.prepareStatement(query);)
       {
         s.setString(1, student);
@@ -66,13 +66,56 @@ public class PortalConnection {
     public String getInfo(String student) throws SQLException{
 
       String query; 
-     // query = "SELECT jsonb_build_object('student',idnr,'name',name) AS jsondata FROM BasicInformation WHERE idnr=?"; 
      
-     query = "SELECT jsonb_build_object('student', idnr, 'name', name, 'login', login, 'program', program, 'branch', branch, 'finished', (SELECT jsonb_agg(jsonb_build_object('course', courseName, 'code', course, 'credits', credits, 'grade', grade)) FROM FinishedCourses WHERE student=?), 'registered', (SELECT jsonb_agg(jsonb_build_object('course', name, 'code', course, 'status', status)) FROM (SELECT name, course, status FROM Registrations WHERE student=? UNION SELECT name FROM Courses WHERE student=?) AS combined), 'seminarCourses', (SELECT seminarCourses FROM PathToGraduation WHERE student=?), 'mathCredits', (SELECT mathCredits FROM PathToGraduation WHERE student=?), 'totalCredits', (SELECT totalCredits FROM PathToGraduation WHERE student=?), 'canGraduate', (SELECT qualified FROM PathToGraduation WHERE student=?)) AS jsondata FROM BasicInformation WHERE idnr=?";
+     query = "SELECT jsonb_build_object("
+     + "'student', idnr, "
+     + "'name', name, "
+     + "'login', login, "
+     + "'program', program, "
+     + "'branch', branch, "
+     + "'finished', ("
+     + "    SELECT jsonb_agg(jsonb_build_object("
+     + "        'course', courseName, "
+     + "        'code', course, "
+     + "        'credits', credits, "
+     + "        'grade', grade"
+     + "    )) FROM FinishedCourses WHERE student = ?"
+     + "), "
+     + "'registered', ("
+     + "    SELECT jsonb_agg(jsonb_build_object("
+     + "        'course', name, "
+     + "        'code', course, "
+     + "        'status', status"
+     + "    )) FROM ("
+     + "        SELECT c.name, r.course, r.status "
+     + "        FROM Registrations r "
+     + "        JOIN Courses c ON r.course = c.code "
+     + "        WHERE r.student = ?"
+     + "    ) AS subquery"
+     + "), "
+     + "'seminarCourses', ("
+     + "    SELECT seminarCourses "
+     + "    FROM PathToGraduation WHERE student = ?"
+     + "), "
+     + "'mathCredits', ("
+     + "    SELECT mathCredits "
+     + "    FROM PathToGraduation WHERE student = ?"
+     + "), "
+     + "'totalCredits', ("
+     + "    SELECT totalCredits "
+     + "    FROM PathToGraduation WHERE student = ?"
+     + "), "
+     + "'canGraduate', ("
+     + "    SELECT qualified "
+     + "    FROM PathToGraduation WHERE student = ?"
+     + ") "
+     + ") AS jsondata "
+     + "FROM BasicInformation WHERE idnr = ?;";
+     
         
         try(PreparedStatement st = conn.prepareStatement(query);)
             {
-            for(int n = 1; n <= 8; n++){
+            for(int n = 1; n <= 7; n++){
               st.setString(n,  student);
             }
            

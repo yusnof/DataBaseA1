@@ -14,19 +14,35 @@ public class TestPortal {
         // System.out.println(c.register("2222222222", "CCC333"));
         // pause();
 
-        
-       //  System.out.println(c.unregister("2222222222", "CCC333")); 
-        // pause();
-        
-
-         prettyPrint(c.getInfo("2222222222")); 
-         pause();
-          /*
-
-         System.out.println(c.register("2222222222", "CCC333")); 
+        //1
+         prettyPrint(c.getInfo("2222222222"));
          pause();
 
-         prettyPrint(c.getInfo("2222222222")); */
+         //2
+         System.out.println(c.register("6666666666", "CCC444"));
+         pause();
+
+         prettyPrint(c.getInfo("6666666666"));
+         pause();
+
+         //3
+         System.out.println(c.register("6666666666", "CCC444"));
+         pause();
+
+         //4
+         System.out.println("Test 4");
+         System.out.println(c.unregister("6666666666", "CCC444"));
+         System.out.println(c.unregister("6666666666", "CCC444"));
+         pause();
+
+         //5
+         System.out.println(c.register("3333333333", "CCC444"));
+         pause();
+
+         // 6 Will not work ;D
+         System.out.println(c.unregister("3333333333", "CCC333"));
+         pause();
+
 
 
 

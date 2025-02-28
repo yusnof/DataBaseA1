@@ -45,30 +45,35 @@ lc_cap INT;
 totalReg INT;
 BEGIN
 -- we check if the student is registered in the course
-IF EXISTS (SELECT student FROM Registrations WHERE OLD.student = student AND OLD.course = course)
-THEN 
-    DELETE FROM Registered WHERE OLD.student = student AND OLD.course = course;
-    
-    SELECT student, course INTO next_student, next_course FROM WaitingList WHERE OLD.course = course ORDER BY position ASC LIMIT 1;
-    SELECT capacity INTO lc_cap FROM LimitedCourses WHERE OLD.course = code;
-    SELECT COUNT(course) INTO totalReg FROM Registered WHERE OLD.course = course;
-
-    -- if this student is on the waitingList and there is space in the course 
-    IF (next_student IS NOT NULL AND lc_cap > totalReg) 
+IF NOT EXISTS (SELECT student FROM Registrations WHERE OLD.student = student AND OLD.course = course)
     THEN
-        INSERT INTO Registered VALUES (next_student, next_course);
-        DELETE FROM WaitingList WHERE student = next_student AND course = next_course;
-        UPDATE WaitingList SET position = position - 1 WHERE OLD.course = course;
+    RAISE EXCEPTION 'Student is not registered or in waiting list';
+    ELSE
+    IF EXISTS (SELECT student FROM Registrations WHERE OLD.student = student AND OLD.course = course)
+    THEN 
+        DELETE FROM Registered WHERE OLD.student = student AND OLD.course = course;
+        
+        SELECT student, course INTO next_student, next_course FROM WaitingList WHERE OLD.course = course ORDER BY position ASC LIMIT 1;
+        SELECT capacity INTO lc_cap FROM LimitedCourses WHERE OLD.course = code;
+        SELECT COUNT(course) INTO totalReg FROM Registered WHERE OLD.course = course;
+
+        -- if this student is on the waitingList and there is space in the course 
+        IF (next_student IS NOT NULL AND lc_cap > totalReg) 
+        THEN
+            INSERT INTO Registered VALUES (next_student, next_course);
+            DELETE FROM WaitingList WHERE student = next_student AND course = next_course;
+            UPDATE WaitingList SET position = position - 1 WHERE OLD.course = course;
+        END IF;
     END IF;
-END IF;
--- Here we check if the student is on the waitingList and if its true, we remove from 
--- the waitingList and the shift the position of the remaining students to insure the 
---correct position 
-IF EXISTS (SELECT 1 FROM WaitingList WHERE OLD.student = student AND OLD.course = course)
-THEN
-    SELECT position INTO removed_position FROM WaitingList WHERE OLD.student = student AND OLD.course = course;
-    DELETE FROM WaitingList WHERE OLD.student = student AND OLD.course = course;
-    UPDATE WaitingList SET position = position - 1 WHERE OLD.course = course AND position > removed_position;
+    -- Here we check if the student is on the waitingList and if its true, we remove from 
+    -- the waitingList and the shift the position of the remaining students to insure the 
+    --correct position 
+    IF EXISTS (SELECT 1 FROM WaitingList WHERE OLD.student = student AND OLD.course = course)
+    THEN
+        SELECT position INTO removed_position FROM WaitingList WHERE OLD.student = student AND OLD.course = course;
+        DELETE FROM WaitingList WHERE OLD.student = student AND OLD.course = course;
+        UPDATE WaitingList SET position = position - 1 WHERE OLD.course = course AND position > removed_position;
+    END IF;
 END IF;
 RETURN OLD;
 END;

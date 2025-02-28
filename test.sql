@@ -11,7 +11,3 @@ SELECT jsonb_build_object('student',idnr,'name',name,'login',login, 'program', p
     'totalCredits', (SELECT jsonb_build_object('number', totalCredits) FROM PathToGraduation WHERE student='2222222222'),
     'canGraduate', (SELECT jsonb_build_object('canGraduate', qualified) FROM PathToGraduation WHERE student='2222222222')
 ) AS jsondata FROM BasicInformation WHERE idnr='2222222222';
-
-
-
-
