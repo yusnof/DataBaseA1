@@ -64,24 +64,32 @@ public class PortalConnection {
 
     // Return a JSON document containing lots of information about a student, it should validate against the schema found in information_schema.json
     public String getInfo(String student) throws SQLException{
+
+      String query; 
+     // query = "SELECT jsonb_build_object('student',idnr,'name',name) AS jsondata FROM BasicInformation WHERE idnr=?"; 
+     
+     query = "SELECT jsonb_build_object('student', idnr, 'name', name, 'login', login, 'program', program, 'branch', branch, 'finished', (SELECT jsonb_agg(jsonb_build_object('course', courseName, 'code', course, 'credits', credits, 'grade', grade)) FROM FinishedCourses WHERE student=?), 'registered', (SELECT jsonb_agg(jsonb_build_object('course', name, 'code', course, 'status', status)) FROM (SELECT name, course, status FROM Registrations WHERE student=? UNION SELECT name FROM Courses WHERE student=?) AS combined), 'seminarCourses', (SELECT seminarCourses FROM PathToGraduation WHERE student=?), 'mathCredits', (SELECT mathCredits FROM PathToGraduation WHERE student=?), 'totalCredits', (SELECT totalCredits FROM PathToGraduation WHERE student=?), 'canGraduate', (SELECT qualified FROM PathToGraduation WHERE student=?)) AS jsondata FROM BasicInformation WHERE idnr=?";
         
-        try(PreparedStatement st = conn.prepareStatement(
-            // replace this with something more useful
-            "SELECT jsonb_build_object('student',idnr,'name',name) AS jsondata FROM BasicInformation WHERE idnr=?"
-            );){
-            
-            st.setString(1, student);
+        try(PreparedStatement st = conn.prepareStatement(query);)
+            {
+            for(int n = 1; n <= 8; n++){
+              st.setString(n,  student);
+            }
+           
             
             ResultSet rs = st.executeQuery();
-            System.out.println(rs.getString("jsondata"));
+
+            //System.out.println(rs.getString("jsondata"));
             
             if(rs.next())
               return rs.getString("jsondata");
               
             else
               return "{\"student\":\"does not exist :(\"}"; 
-            
         } 
+        catch (SQLException e) {
+          return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
+        }     
     }
 
     // This is a hack to turn an SQLException into a JSON string error message. No need to change.
