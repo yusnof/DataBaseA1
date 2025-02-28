@@ -6,7 +6,7 @@ public class PortalConnection {
 
     // Set this to e.g. "portal" if you have created a database named portal
     // Leave it blank to use the default database of your database user
-    static final String DBNAME = "";
+    static final String DBNAME = "portal";
     // For connecting to the portal database on your local machine
     static final String DATABASE = "jdbc:postgresql://localhost/"+DBNAME;
     static final String USERNAME = "postgres";
@@ -36,7 +36,8 @@ public class PortalConnection {
       {
         s.setString(1, student);
         s.setString(2, courseCode); 
-        s.executeUpdate(query); 
+        
+        s.executeUpdate(); 
         return "{\"success\":true"+"\"}";
       } // here the output will be an error if we didnt register correctly. 
        catch (SQLException e) {
@@ -46,14 +47,14 @@ public class PortalConnection {
 
     // Unregister a student from a course, returns a tiny JSON document (as a String)
     public String unregister(String student, String courseCode){
-      String query = "DELETE FROM Registered WHERE OLD.student = ? AND OLD.course = ?);";
+      String query = "DELETE FROM Registered WHERE (student = ? AND course = ?);";
        try(PreparedStatement s = conn.prepareStatement(query);)
       {
         s.setString(1, student);
         s.setString(2, courseCode); 
-        s.executeUpdate(query); 
+        s.executeUpdate(); 
         // here maybe we should test if its really correct but the trigger should catch this issue. 
-        return "{\"success\":true"+"\"}";
+        return "{\"success\":true"+ "\"}";
       } 
        catch (SQLException e) {
         return "{\"success\":false, \"error\":\""+getError(e)+"\"}";
