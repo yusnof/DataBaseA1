@@ -4,6 +4,8 @@ CREATE FUNCTION CountRegistered() RETURNS trigger AS $$
     capacity INT; 
     waiting INT;
     BEGIN 
+    IF NOT EXISTS (SELECT student FROM Registrations WHERE NEW.student = student AND NEW.course = course)
+    THEN
     --We first cheack if the student aldready taken the course
     IF EXISTS (SELECT course FROM PassedCourses WHERE NEW.student = student AND NEW.course = course) THEN 
     RAISE EXCEPTION 'Student has passed course';
@@ -31,6 +33,9 @@ CREATE FUNCTION CountRegistered() RETURNS trigger AS $$
     ELSE
     RAISE EXCEPTION 'You do not meet the Pre-requirements for the course, git g0d slacker(SIMON)';
     END IF; 
+    END IF; 
+    ELSE 
+    RAISE EXCEPTION 'Yousef added, student aldread registered in the course';
     END IF; 
     RETURN NEW;      
     END;
