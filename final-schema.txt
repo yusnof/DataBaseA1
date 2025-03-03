@@ -10,7 +10,7 @@ Classified(_name_,_code_)
 LimitedCourses(_code_, capacity)
   code → Courses.code
 
-WaitingList(_student_, courseCode, position)
+WaitingList(_student_, _courseCode_, position)
  student -> studentIdnr.idnr
  courseCode -> LimitedCourses.courseCode
  UNIQUE(position, courseCode) 

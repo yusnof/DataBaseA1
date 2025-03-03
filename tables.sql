@@ -143,7 +143,7 @@ CREATE TABLE
         student TEXT CHECK (student SIMILAR TO '[0-9]{10}'),
         course CHAR(6),
         position INT NOT NULL,
-        PRIMARY KEY (student),
+        PRIMARY KEY (student, course),
         FOREIGN KEY (student) REFERENCES Students (idnr),
         FOREIGN KEY (course) REFERENCES LimitedCourses (code),
         CHECK (position >= 0),
