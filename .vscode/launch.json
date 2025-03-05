@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "PortalServer",
+            "request": "launch",
+            "mainClass": "PortalServer",
+            "projectName": "DataBaseA1_64655d65"
+        },
+        {
+            "type": "java",
             "name": "TestPortal",
             "request": "launch",
             "mainClass": "TestPortal",
