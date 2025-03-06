@@ -15,12 +15,12 @@ public class TestPortal {
         // pause();
 
         //1
-         System.out.println("Test 1");
+         System.out.println("Test 1 - Fetching information");
          prettyPrint(c.getInfo("2222222222"));
          pause();
 
          //2
-         System.out.println("Test 2");
+         System.out.println("Test 2 - Register and unregister");
          System.out.println(c.register("6666666666", "CCC111"));
          pause();
 
@@ -28,7 +28,7 @@ public class TestPortal {
          pause();
 
          //3
-         System.out.println("Test 3");
+         System.out.println("Test 3 - Register same student, expected error");
          System.out.println(c.register("6666666666", "CCC111"));
          pause();
 
@@ -40,12 +40,12 @@ public class TestPortal {
          pause();
 
          //5
-         System.out.println("Test 5");
+         System.out.println("Test 5 - Register the student for a course that he/she does not have the prerequisites for, and check that an error is generated.");
          System.out.println(c.register("3333333333", "CCC444"));
          pause();
 
          // 6 Will not work ;D
-         System.out.println("Test 6");
+         System.out.println("Test 6 - Unregister a student from a restricted course that he/she is registered to, and which has at least two students in the queue. Register the student again to the same course and check that the student gets the correct (last) position in the waiting list.");
          System.out.println(c.unregister("3333333333", "CCC333"));
          pause();
 
