@@ -46,7 +46,12 @@ public class TestPortal {
 
          // 6 Will not work ;D
          System.out.println("Test 6 - Unregister a student from a restricted course that he/she is registered to, and which has at least two students in the queue. Register the student again to the same course and check that the student gets the correct (last) position in the waiting list.");
-         System.out.println(c.unregister("3333333333", "CCC333"));
+         c.register("1111111111", "CCC777");
+         c.register("2222222222", "CCC777");
+         c.register("3333333333", "CCC777");
+         c.unregister("3333333333", "CCC777");
+         c.register("3333333333", "CCC777");
+         prettyPrint(c.getInfo("3333333333"));
          pause();
 
 
