@@ -10,7 +10,7 @@ public class PortalConnection {
   // For connecting to the portal database on your local machine
   static final String DATABASE = "jdbc:postgresql://localhost/" + DBNAME;
   static final String USERNAME = "postgres";
-  static final String PASSWORD = "postgres";
+  static final String PASSWORD = "123";
 
   // This is the JDBC connection object you will be using in your methods.
   private Connection conn;
@@ -87,7 +87,7 @@ public class PortalConnection {
     "                        SELECT c.name, r.course, r.status, w.position " +
     "                        FROM Registrations r " +
     "                        JOIN Courses c ON r.course = c.code " +
-    "                        JOIN WaitingList w ON w.student = c.name " +
+    "                        JOIN WaitingList w ON w.student = r.student " +
     "                        WHERE r.student = ? " +
     "                   ) AS x), '[ ]':: jsonb), " +
     "    'seminarCourses', (SELECT (seminarCourses) FROM PathToGraduation WHERE student = ? )," +

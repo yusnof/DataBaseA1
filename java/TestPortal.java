@@ -1,4 +1,5 @@
-public class TestPortal {
+public class
+TestPortal {
 
    // enable this to make pretty printing a bit more compact
    private static final boolean COMPACT_OBJECTS = false;
@@ -49,6 +50,7 @@ public class TestPortal {
          c.register("1111111111", "CCC777");
          c.register("2222222222", "CCC777");
          c.register("3333333333", "CCC777");
+         c.register("3333333333", "CCC111");
          c.unregister("3333333333", "CCC777");
          c.register("3333333333", "CCC777");
          prettyPrint(c.getInfo("3333333333"));
