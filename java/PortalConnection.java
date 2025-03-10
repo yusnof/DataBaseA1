@@ -42,6 +42,31 @@ public class PortalConnection {
       return "{\"success\":false, \"error\":\"" + getError(e) + "\"}";
     }
   }
+   // Unregister a student from a course, returns a tiny JSON document (as a
+  // String)
+  public String BrokenUnregister(String student, String courseCode) {
+    int output = -1;
+
+    //this is a broken query to show case the sql injection
+    String query = "DELETE FROM Registrations WHERE student = '"+student+"' AND course = '"+courseCode+"';";
+    try (PreparedStatement s = conn.prepareStatement(query);) {
+     // s.setString(1, student);
+     // s.setString(2, courseCode);
+
+      output = s.executeUpdate();
+      if (output == 1) {
+        // here maybe we should test if its really correct but the trigger should catch
+        // this issue.
+        return "{\"success\":true" + "\"}";
+      }
+      else{
+        return "Student is not in waiting table or registered.";
+      }
+
+    } catch (SQLException e) {
+      return "{\"success\":false, \"error\":\"" + getError(e) + "\"}";
+    }
+  }
 
   // Unregister a student from a course, returns a tiny JSON document (as a
   // String)
@@ -65,7 +90,6 @@ public class PortalConnection {
     } catch (SQLException e) {
       return "{\"success\":false, \"error\":\"" + getError(e) + "\"}";
     }
-
   }
 
   // Return a JSON document containing lots of information about a student, it
