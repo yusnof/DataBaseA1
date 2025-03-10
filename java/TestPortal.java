@@ -90,8 +90,6 @@ TestPortal {
          //9
          // Unregister with the SQL injection you introduced, causing all (or almost all?) registrations to disappear.
          System.out.println("Test 9 -this should break the and delete the tabel");
-        // System.out.println(c.BrokenUnregister("1111111111", "DELETE FROM Registered WHERE student='1337' AND course='x' OR 'a'='a'"));
-         //System.out.println(c.BrokenUnregister("1111111111", "CCC888'; DROP TABLE Registered CASCADE;"));
          System.out.println(c.BrokenUnregister("1111111111", "CCC888' OR '1'='1"));
         
       
