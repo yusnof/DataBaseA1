@@ -1,5 +1,6 @@
 
 import java.sql.*; // JDBC stuff.
+import java.text.NumberFormat.Style;
 import java.util.Properties;
 
 public class PortalConnection {
@@ -10,7 +11,7 @@ public class PortalConnection {
   // For connecting to the portal database on your local machine
   static final String DATABASE = "jdbc:postgresql://localhost/" + DBNAME;
   static final String USERNAME = "postgres";
-  static final String PASSWORD = "123";
+  static final String PASSWORD = "postgres";
 
   // This is the JDBC connection object you will be using in your methods.
   private Connection conn;
@@ -49,12 +50,13 @@ public class PortalConnection {
 
     //this is a broken query to show case the sql injection
     String query = "DELETE FROM Registrations WHERE student = '"+student+"' AND course = '"+courseCode+"';";
-    try (PreparedStatement s = conn.prepareStatement(query);) {
-     // s.setString(1, student);
-     // s.setString(2, courseCode);
 
-      output = s.executeUpdate();
-      if (output == 1) {
+
+    try (Statement s = conn.createStatement();) {
+
+      output = s.executeUpdate(query);
+
+ if (output == 1) {
         // here maybe we should test if its really correct but the trigger should catch
         // this issue.
         return "{\"success\":true" + "\"}";
@@ -97,34 +99,29 @@ public class PortalConnection {
   public String getInfo(String student) throws SQLException {
 
     String query;
-
-    query = "SELECT jsonb_build_object(" +
-    "    'student', idnr, " +
-    "    'name', name, " +
-    "    'login', login, " +
-    "    'program', program, " +
-    "    'branch', branch, " +
-    "    'finished', (SELECT jsonb_agg(jsonb_build_object('course', courseName, 'code', course, 'credits', credits, 'grade', grade)) " +
-    "                FROM FinishedCourses WHERE student = ?), " +
-    "    'registered', COALESCE((SELECT jsonb_agg(jsonb_build_object('course', name, 'code', course, 'status', status, 'position', COALESCE(x.position, 0))) " +
-    "                   FROM ( " +
-    "                        SELECT c.name, r.course, r.status, w.position " +
-    "                        FROM Registrations r " +
-    "                        JOIN Courses c ON r.course = c.code " +
-    "                        JOIN WaitingList w ON w.student = r.student " +
-    "                        WHERE r.student = ? " +
-    "                   ) AS x), '[ ]':: jsonb), " +
-    "    'seminarCourses', (SELECT (seminarCourses) FROM PathToGraduation WHERE student = ? )," +
-    "    'mathCredits', (SELECT (mathCredits) FROM PathToGraduation WHERE student = ?), " +
-    "    'totalCredits', (SELECT (totalCredits) FROM PathToGraduation WHERE student = ?), " +
-    "    'canGraduate', (SELECT (qualified) FROM PathToGraduation WHERE student = ?)" +
+    
+    query = 
+    "SELECT jsonb_build_object( " +
+    "  'student', b.idnr, " +
+    "  'name', b.name, " +
+    "  'login', b.login, " +
+    "  'program', b.program, " +
+    "  'branch', b.branch, " +
+    "  'finished', f.finished_courses, " +
+    "  'registered', COALESCE(r.registered_courses, '[]'::jsonb), " +
+    "  'seminarCourses', g.seminarCourses, " +
+    "  'mathCredits', g.mathCredits, " +
+    "  'totalCredits', g.totalCredits, " +
+    "  'canGraduate', g.can_graduate " +
     ") AS jsondata " +
-    "FROM BasicInformation WHERE idnr = ?;";
+    "FROM BasicInformation b " +
+    "LEFT JOIN finished_courses_view f ON b.idnr = f.student " +
+    "LEFT JOIN registered_courses_view r ON b.idnr = r.student " +
+    "LEFT JOIN graduation_path_view g ON b.idnr = g.student " +
+    "WHERE b.idnr = ?;";
 
     try (PreparedStatement st = conn.prepareStatement(query);) {
-      for (int n = 1; n <= 7; n++) {
-        st.setString(n, student);
-      }
+      st.setString(1, student);
 
       ResultSet rs = st.executeQuery();
 
@@ -150,4 +147,28 @@ public class PortalConnection {
     message = message.replace("\"", "\\\"");
     return message;
   }
-}
+
+
+
+String oldquery = "SELECT jsonb_build_object(" +
+"    'student', idnr, " +
+"    'name', name, " +
+"    'login', login, " +
+"    'program', program, " +
+"    'branch', branch, " +
+"    'finished', (SELECT jsonb_agg(jsonb_build_object('course', courseName, 'code', course, 'credits', credits, 'grade', grade)) " +
+"                FROM FinishedCourses WHERE student = ?), " +
+"    'registered', COALESCE((SELECT jsonb_agg(jsonb_build_object('course', name, 'code', course, 'status', status, 'position', COALESCE(x.position, 0))) " +
+"                   FROM ( " +
+"                        SELECT c.name, r.course, r.status, w.position " +
+"                        FROM Registrations r " +
+"                        JOIN Courses c ON r.course = c.code " +
+"                        JOIN WaitingList w ON w.student = r.student " +
+"                        WHERE r.student = ? " +
+"                   ) AS x), '[ ]':: jsonb), " +
+"    'seminarCourses', (SELECT (seminarCourses) FROM PathToGraduation WHERE student = ? )," +
+"    'mathCredits', (SELECT (mathCredits) FROM PathToGraduation WHERE student = ?), " +
+"    'totalCredits', (SELECT (totalCredits) FROM PathToGraduation WHERE student = ?), " +
+"    'canGraduate', (SELECT (qualified) FROM PathToGraduation WHERE student = ?)" +
+") AS jsondata " +
+"FROM BasicInformation WHERE idnr = ?;";}

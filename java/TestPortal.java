@@ -14,7 +14,8 @@ TestPortal {
          // Use println instead of prettyPrint to get more compact output (if your raw JSON is already readable)
         // System.out.println(c.register("2222222222", "CCC333"));
         // pause();
-
+        /* 
+        
         //1
          System.out.println("Test 1 - Fetching information");
          prettyPrint(c.getInfo("2222222222"));
@@ -48,16 +49,51 @@ TestPortal {
          // 6 Will not work ;D
          System.out.println("Test 6 - Unregister a student from a restricted course that he/she is registered to, and which has at least two students in the queue. Register the student again to the same course and check that the student gets the correct (last) position in the waiting list.");
          c.register("1111111111", "CCC777");
-         c.register("2222222222", "CCC777");
          c.register("3333333333", "CCC777");
-         c.register("3333333333", "CCC111");
+         System.out.println("Check that student 333333333 is in the first position waiting");
+         prettyPrint(c.getInfo("1111111111"));
+         prettyPrint(c.getInfo("3333333333"));
+         pause();
+         c.register("2222222222", "CCC777");
          c.unregister("3333333333", "CCC777");
          c.register("3333333333", "CCC777");
          prettyPrint(c.getInfo("3333333333"));
          pause();
 
+         //7 Unregister and re-register the same student for the same restricted course, 
+         //and check that the student is first removed and then ends up in the same position as before (last).
+         System.out.println("Test 7: Unregister and register again to restrictred course");
+         c.register("1111111111", "CCC222");
+         c.register("2222222222", "CCC222");
+         c.register("3333333333", "CCC222"); //Should be position two
+         prettyPrint(c.getInfo("3333333333"));
+         pause();
+         c.unregister("3333333333", "CCC222");
+         c.register("3333333333", "CCC222");
+         prettyPrint(c.getInfo("3333333333"));
+         pause();
 
-
+         //8
+         System.out.println("Test 8 - Unregister from overfull course");
+         c.register("2222222222", "CCC888");
+         c.register("1111111111", "CCC888");
+         c.register("1111111111", "CCC888");
+         c.register("1111111111", "CCC888");
+         prettyPrint(c.getInfo("1111111111"));
+         pause();
+         c.unregister("1111111111", "CCC888");
+         c.register("1111111111", "CCC888");
+         prettyPrint(c.getInfo("2222222222")); //Should be queue 1
+         prettyPrint(c.getInfo("1111111111")); //Should be queue 2
+         pause(); */
+         
+         //9
+         // Unregister with the SQL injection you introduced, causing all (or almost all?) registrations to disappear.
+         String shitquery = "DELETE FROM Registrations WHERE student = '1111111111' AND course = 'CCC888 '; DROP TABLE Registered CASCADE;";
+         System.out.println("Test 9 -this should break the and delete the tabel");
+        // System.out.println(c.BrokenUnregister("1111111111", "DELETE FROM Registered WHERE student='1337' AND course='x' OR 'a'='a'"));
+         System.out.println(c.BrokenUnregister("1111111111", "CCC888'; DROP TABLE Registered CASCADE;"));
+        // prettyPrint(c.getInfo("3333333333"));
 
       
       } catch (ClassNotFoundException e) {
