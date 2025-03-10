@@ -56,14 +56,7 @@ public class PortalConnection {
 
       output = s.executeUpdate(query);
 
- if (output == 1) {
-        // here maybe we should test if its really correct but the trigger should catch
-        // this issue.
-        return "{\"success\":true" + "\"}";
-      }
-      else{
-        return "Student is not in waiting table or registered.";
-      }
+      return "{\"success\":maybe true" + output + "\"}";
 
     } catch (SQLException e) {
       return "{\"success\":false, \"error\":\"" + getError(e) + "\"}";
